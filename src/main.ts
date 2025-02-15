@@ -12,22 +12,25 @@ import * as path from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // DTO、バリデーションの設定
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  // CI時はAPIサーバーの設定をスキップ
+  if (process.env.GENERATE_SWAGGER_YAML !== 'true') {
+    // DTO、バリデーションの設定
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
-  // CORS
-  app.enableCors({ credentials: true, origin: ['http://localhost:3000'] });
+    // CORS
+    app.enableCors({ credentials: true, origin: ['http://localhost:3000'] });
 
-  // cookie
-  app.use(cookieParser());
+    // cookie
+    app.use(cookieParser());
 
-  // csurf
-  app.use(
-    csurf({
-      cookie: { httpOnly: true, secure: true },
-      value: (req: Request) => req.header('csrf-token'),
-    }),
-  );
+    // csurf（CSRF 対策）
+    app.use(
+      csurf({
+        cookie: { httpOnly: true, secure: true },
+        value: (req: Request) => req.header('csrf-token'),
+      }),
+    );
+  }
 
   // Swagger 設定
   const config = new DocumentBuilder()
@@ -50,9 +53,8 @@ async function bootstrap() {
   } else {
     // ローカル環境では Swagger UI を起動
     SwaggerModule.setup('api', app, document);
+    await app.listen(process.env.PORT || 3005);
   }
-
-  await app.listen(process.env.PORT || 3005);
 }
 
 bootstrap();
