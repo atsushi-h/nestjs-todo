@@ -5,12 +5,10 @@ import { PrismaClient } from '@prisma/client';
 @Injectable()
 export class PrismaService extends PrismaClient {
   constructor(private readonly config: ConfigService) {
-    super({
-      datasources: {
-        db: {
-          url: config.get('DATABASE_URL'),
-        },
-      },
-    });
+    if (process.env.GENERATE_SWAGGER_YAML === 'true') {
+      // CIのyamlファイル生成時はDBに接続しない
+      return;
+    }
+    super({ datasources: { db: { url: config.get('DATABASE_URL') } } });
   }
 }
