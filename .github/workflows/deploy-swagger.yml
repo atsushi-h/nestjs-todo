@@ -32,8 +32,17 @@ jobs:
           export GENERATE_SWAGGER_YAML=true
           npm run start
 
-      - name: Upload artifact
-        if: github.event_name == 'push'
+      # PRの場合はswagger.yamlをアーティファクトとして保存
+      - name: Upload swagger.yaml as an artifact
+        if: contains(github.event_name, 'pull_request')
+        uses: actions/upload-artifact@v3
+        with:
+          name: swagger-yaml
+          path: docs/swagger.yaml
+
+      # mainブランチへのpushの場合のみGitHub Pagesにデプロイ
+      - name: Upload artifact for GitHub Pages
+        if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs
