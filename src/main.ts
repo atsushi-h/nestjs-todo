@@ -30,8 +30,8 @@ async function bootstrap() {
 
   // Swagger
   const config = new DocumentBuilder()
-    .setTitle('Test API Project')
-    .setDescription('Test API description')
+    .setTitle('Todo API Document')
+    .setDescription('Todo API description')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
