@@ -35,7 +35,7 @@ jobs:
       # PRの場合はswagger.yamlをアーティファクトとして保存
       - name: Upload swagger.yaml as an artifact
         if: contains(github.event_name, 'pull_request')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: swagger-yaml
           path: docs/swagger.yaml
